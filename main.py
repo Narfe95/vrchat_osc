@@ -20,7 +20,7 @@ class OSCParams:
     receiver_port: int = 9001
     sender_port: int = 9000
     base_address: str = "/avatar/parameters"
-    chatbox_input: str = "/chatbox/input"
+    chatbox_osc: str = "/chatbox/input"
     sleep_time: int = 10
 
 
@@ -73,8 +73,8 @@ class OSC:
 
     def __send_chat_message(self, message: str):
         __client = SimpleUDPClient(self.__osc_params.ip, self.__osc_params.sender_port)
-        __client.send_message(f"{self.__osc_params.chatbox_input}", message)
-        print(f"Sent message to '{self.__osc_params.chatbox_input}' with a value of '{message}'")
+        __client.send_message(f"{self.__osc_params.chatbox_osc}", [message, True])
+        print(f"Sent message to '{self.__osc_params.chatbox_osc}' with a value of '{message}'")
 
 
 if __name__ == "__main__":
