@@ -1,9 +1,6 @@
 """
 Requires two parameters on the avatar on which it will be used.
 
-CreateParty: bool
-NewWorld: bool
-
 Suggested is to set these parameters using a toggle to let this script set it back to False.
 
 """
@@ -34,26 +31,11 @@ class OSC:
         self.__osc_params = osc_params
         self.__party_members = list()
         dispatcher = Dispatcher()
-        dispatcher.map(f"{self.__osc_params.base_osc_address}/CreateParty", self.__create_party)
-        dispatcher.map(f"{self.__osc_params.base_osc_address}/NewWorld", self.__new_world)
+        dispatcher.map(f"{self.__osc_params.base_osc_address}/ExampleAction", self.__example_action)
         self.server = ThreadingOSCUDPServer((self.__osc_params.ip, self.__osc_params.receiver_port), dispatcher)
 
-    def __create_party(self, _, *args):
-        # Fetch players in instance and create "party"
-        if args[0]:  # Only run if the parameter is set to true
-            print("New party requested.")
-            self.__party_created = True
-            self.__send_message("CreateParty", False)
-            # Create party code here
+    def __example_action(self, _, *args):
 
-    def __new_world(self, _, *args):
-        # Find new world to create instance for and invite players in party
-        if args[0] and self.__party_members:  # Only run if the parameter is set to true and a party has been formed
-            print("New world requested...")
-            # New world code here and invite party
-            # Return the players in party to parameter in-game
-        if args[0]:
-            self.__send_message("NewWorld", False)
 
     def __send_message(self, parameter: str, value: Union[int, float, bytes, str, bool, tuple, list]) -> None:
         __client = SimpleUDPClient(self.__osc_params.ip, self.__osc_params.sender_port)
