@@ -7,7 +7,7 @@ NewWorld: bool
 Suggested is to set these parameters using a toggle to let this script set it back to False.
 
 """
-
+from dataclasses import dataclass
 from typing import Union
 
 from pythonosc.dispatcher import Dispatcher
@@ -20,13 +20,12 @@ SENDER_PORT = 9000
 BASE_ADDRESS = "/avatar/parameters"
 
 
+@dataclass
 class OSCParams:
-
-    def __init__(self, ip, receiver_port, sender_port, base_osc_address: str):
-        self.ip = ip
-        self.receiver_port = receiver_port
-        self.sender_port = sender_port
-        self.base_osc_address = base_osc_address
+    ip: str
+    receiver_port: int
+    sender_port: int
+    base_osc_address: str
 
 
 class OSC:
