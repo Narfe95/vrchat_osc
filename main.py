@@ -35,7 +35,7 @@ class OSC:
         self.server = ThreadingOSCUDPServer((self.__osc_params.ip, self.__osc_params.receiver_port), dispatcher)
 
     def __example_action(self, _, *args):
-
+        pass
 
     def __send_message(self, parameter: str, value: Union[int, float, bytes, str, bool, tuple, list]) -> None:
         __client = SimpleUDPClient(self.__osc_params.ip, self.__osc_params.sender_port)
