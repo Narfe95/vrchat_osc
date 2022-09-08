@@ -27,24 +27,25 @@ class OSCParams:
 class OSC:
 
     def __init__(self, osc_params: OSCParams, text: List[str]):
-        self.__osc_params = osc_params
-        self.__text = text
-        self.__task = None
-        self.__task_running = False
+        self.osc_params = osc_params
+        self.text = text
+        self.task = None
+        self.task_running = False
         dispatcher = Dispatcher()
-        dispatcher.map(f"{self.__osc_params.base_address}/toggle_text", self.__toggle_text)
-        self.server = ThreadingOSCUDPServer((self.__osc_params.ip, self.__osc_params.receiver_port), dispatcher)
+        dispatcher.map(f"{self.osc_params.base_address}/toggle_text", self.toggle_text)
+        self.server = ThreadingOSCUDPServer((self.osc_params.ip, self.osc_params.receiver_port), dispatcher)
 
     def kill_send_messages(self):
-        if self.__get_loop():
-            self.__task_running = False
-            self.__get_loop().close()
+        if self.get_loop():
+            self.task_running = False
+            self.get_loop().close()
 
-    def __next_string(self):
-        for string in self.__text:
-            yield string
+    def next_string(self):
+        while True:  # To avoid running out of strings to generate.
+            for string in self.text:
+                yield string
 
-    def __get_loop(self) -> AbstractEventLoop:
+    def get_loop(self) -> AbstractEventLoop:
         try:
             return get_running_loop()
         except RuntimeError:
@@ -52,29 +53,24 @@ class OSC:
             set_event_loop(loop)
             return loop
 
-    def __toggle_text(self, _, *args):
-        self.__task_running = args[0]
-        if self.__task_running:
-            gen = self.__next_string()
-            self.__get_loop().run_until_complete(self.__message_dispatcher(gen))
+    def toggle_text(self, _, *args):
+        self.task_running = args[0]
+        if self.task_running:
+            gen = self.next_string()
+            self.get_loop().run_until_complete(self.message_dispatcher(gen))
 
-    async def __message_dispatcher(self, gen):
-        self.__task = self.__get_loop().create_task(self.__send_messages(gen))
+    async def message_dispatcher(self, gen):
+        self.task = self.get_loop().create_task(self.send_messages(gen))
 
-    async def __send_messages(self, gen):
-        while self.__task_running:
-            self.__send_chat_message(next(gen))
-            sleep(self.__osc_params.sleep_time)
+    async def send_messages(self, gen):
+        while self.task_running:
+            self.send_chat_message(next(gen))
+            sleep(self.osc_params.sleep_time)
 
-    def __send_param(self, parameter: str, value: Union[int, float, bytes, str, bool, tuple, list]) -> None:
-        __client = SimpleUDPClient(self.__osc_params.ip, self.__osc_params.sender_port)
-        __client.send_message(f"{self.__osc_params.base_address}/{parameter}", value)
-        print(f"Sent message to '{self.__osc_params.base_address}/{parameter}' with a value of '{value}'")
-
-    def __send_chat_message(self, message: str):
-        __client = SimpleUDPClient(self.__osc_params.ip, self.__osc_params.sender_port)
-        __client.send_message(f"{self.__osc_params.chatbox_osc}", [message, True])
-        print(f"Sent message to '{self.__osc_params.chatbox_osc}' with a value of '{message}'")
+    def send_chat_message(self, message: str):
+        client = SimpleUDPClient(self.osc_params.ip, self.osc_params.sender_port)
+        client.send_message(f"{self.osc_params.chatbox_osc}", [message, True])
+        print(f"Sent message to '{self.osc_params.chatbox_osc}' with a value of '{message}'")
 
 
 if __name__ == "__main__":
