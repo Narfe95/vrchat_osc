@@ -74,10 +74,10 @@ class OSC:
 
 
 if __name__ == "__main__":
-    lyrics_file = open(file="lyrics.txt", mode="r")
+    lyrics_file = open(file="bee.txt", mode="r")
     lyrics = lyrics_file.read().splitlines()
     lyrics_file.close()
-    osc = OSC(OSCParams(), lyrics)
+    osc = OSC(OSCParams(sleep_time=3), lyrics)
     print(f"Starting server")
     try:
         osc.server.serve_forever()
