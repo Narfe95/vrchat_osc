@@ -7,11 +7,11 @@ Suggested is to set these parameters using a toggle to let this script set it ba
 from asyncio import get_running_loop, new_event_loop, set_event_loop, AbstractEventLoop
 from dataclasses import dataclass
 from time import sleep
-from typing import Union, List
+from typing import List
 
 from pythonosc.dispatcher import Dispatcher
-from pythonosc.udp_client import SimpleUDPClient
 from pythonosc.osc_server import ThreadingOSCUDPServer
+from pythonosc.udp_client import SimpleUDPClient
 
 
 @dataclass
